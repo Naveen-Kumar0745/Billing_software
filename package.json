@@ -1,4 +1,13 @@
 {
+  "type": "module",
+  "name": "billing-software",
+  "version": "1.0.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3"
+  }
+}
+
+{
   "name": "full-dep-billing",
   "version": "1.0.0",
   "description": "Billing application with Vercel + Supabase",
