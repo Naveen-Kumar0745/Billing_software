@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prabu Gandhi Snacks & Sweets</title>
+
+<style>
+/* MODERN BACKGROUND & LAYOUT */
+body {
+    font-family: monospace;
+    background: url("BG Img.png") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+/* CENTERED LOGIN/SIGNUP CARD */
+#authContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.box {
+    max-width: 420px;
+    width: 100%;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.hidden { display: none !important; }
+
+h2 { text-align: center; margin: 10px 0; color: #333; }
+.address { text-align: center; font-size: 11px; color: #666; }
+
+/* 🔹 LOGO STYLE (ADDED ONLY) */
+.logo-title{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+.logo-title img{
+    height:28px;
+    width:auto;
+}
+
+input, button, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+button {
+    background: #2d3436;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+button:hover { background: #000; }
+
+.auth-footer {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #555;
+}
+
+.auth-footer span {
+    color: #764ba2;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* TABLE & BILLING STYLES */
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+th, td { text-align: center; padding: 6px; border-bottom: 1px solid #eee; }
+th { border-bottom: 1px dashed #000; }
+.total { text-align: right; font-size: 14px; margin-top: 10px; font-weight: bold; }
+.remove { color: red; font-weight: bold; cursor: pointer; }
+
+.btn-row { display: flex; justify-content: space-between; gap: 6px; }
+.btn-center { display: flex; justify-content: center; margin: 6px 0; }
+.btn-print { background: #0a7cff !important; }
+.btn-danger { background: #b00020 !important; }
+
+.bill-card {
+    border-bottom: 1px solid #ccc;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* SALES TABLE STYLE */
+.sales-table { width: 100%; margin-top: 10px; border: 1px solid #eee; }
+.sales-table td { text-align: left; padding: 10px; border-bottom: 1px solid #f2f2f2; }
+.sales-val { font-weight: bold; text-align: right; }
+
+/* FILTER */
+.filter-header { display: flex; justify-content: space-between; align-items: center; }
+.filter-box { border: 1px dashed #aaa; padding: 6px; margin: 6px 0; }
+
+/* PRINT */
+.print-only { display: none; }
+@media print {
+    body { background: #fff !important; }
+    .box { display: none !important; }
+    .print-only {
+        display: block !important;
+        width: 57mm;
+        max-width: 57mm;
+        padding: 2mm;
+        margin: 0;
+        font-size: 10.5px;
+        line-height: 1.2;
+        color: #000;
+    }
+    .logo-title img{ height:20px; }
+    hr { border-top: 1px dashed #000; }
+    .row { display: flex; justify-content: space-between; font-size: 11px; }
+    .head-row { display: flex; font-weight: bold; font-size: 11px; }
+    .item-row { display: flex; font-size: 11px; }
+    .c-sn { width: 8%; }
+    .c-item { width: 42%; }
+    .c-qty { width: 12%; text-align: right; }
+    .c-rate { width: 18%; text-align: right; }
+    .c-amt { width: 20%; text-align: right; }
+    .total-line { text-align: right; font-weight: bold; }
+    .print-title { text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 2px; }
+    .print-address { text-align: center; font-size: 10px; margin-bottom: 5px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTH -->
+<div id="authContainer">
+    <div class="box" id="loginBox">
+        <h2 id="loginTitle">Login</h2>
+        <input id="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div class="auth-footer">
+            Don't have an account? <span onclick="toggleAuth()">Sign Up</span>
+        </div>
+    </div>
+
+    <div class="box hidden" id="signupBox">
+        <h2>Create Account</h2>
+        <input id="regEmail" placeholder="Enter Email">
+        <input id="regPassword" type="password" placeholder="Create Password">
+        <button onclick="signup()">Sign Up</button>
+        <div class="auth-footer">
+            Already have an account? <span onclick="toggleAuth()">Login</span>
+        </div>
+    </div>
+</div>
+
+<!-- BILL -->
+<div class="box hidden" id="billBox" style="margin-top: 40px; margin-bottom: 40px;">
+    <h2 class="logo-title">
+        <img src="Logo.png" alt="Logo">
+        Prabu Gandhi Snacks & Sweets
+    </h2>
+    <div class="address">
+        2/253 Palladam Road, Puliampatti,
+        Pollachi, Coimbatore - 642002<br>
+        Ph: 8870567426
+    </div>
+
+    <!-- REST OF YOUR CODE CONTINUES UNCHANGED -->
+    <!-- JS BELOW IS 100% YOUR ORIGINAL JS -->
+
+
+    <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+    </select>
+
+    <p><b id="billTxt">Bill No:</b> <span id="billNo"></span></p>
+
+    <input id="customer" placeholder="Customer Name">
+    <input id="item" placeholder="Item">
+    <input id="price" type="number" placeholder="Rate ₹">
+    <button onclick="addItem()" id="addBtn">Add Item</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th><th id="thItem">Item</th>
+                <th id="thQty">Qty</th><th id="thRate">Rate</th>
+                <th id="thAmt">Amt</th><th></th>
+            </tr>
+        </thead>
+        <tbody id="list"></tbody>
+    </table>
+
+    <div class="total">
+        <span id="itemLabel">Items</span> : <span id="itemCount">0</span><br>
+        <span id="totalLabel">TOTAL</span> ₹ <span id="total">0</span>
+    </div>
+
+    <div class="btn-row">
+        <button onclick="saveBill()" id="saveBtn">Save</button>
+        <button onclick="newBill()" id="newBtn">New Bill</button>
+    </div>
+
+    <div class="btn-row">
+        <button onclick="openSaved()" id="savedBtn">Saved Bills</button>
+        <button onclick="showSales()" id="salesBtn">Sales</button>
+    </div>
+
+    <div class="btn-center">
+        <button class="btn-print" onclick="preparePrint();window.print()">PRINT</button>
+    </div>
+
+    <div class="btn-center">
+        <button class="btn-danger" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- SAVED -->
+<div class="box hidden" id="savedBox" style="margin-top: 40px;">
+    <div class="filter-header">
+        <h2>Saved Bills</h2>
+        <button onclick="toggleFilter()" style="width: auto;">🔍</button>
+    </div>
+    <div id="filterPanel" class="filter-box hidden">
+        <input id="filterDate" placeholder="Date (YYYY-MM-DD)">
+        <input id="filterMonth" placeholder="Month (YYYY-MM)">
+        <button onclick="applyFilter()">Apply</button>
+        <button onclick="clearFilter()">Clear</button>
+    </div>
+    <div id="savedList"></div>
+    <button onclick="back()" style="margin-top: 10px;">Back</button>
+</div>
+
+<!-- SALES -->
+<div class="box hidden" id="salesBox" style="margin-top: 40px;">
+    <h2>Sales Summary</h2>
+    <table class="sales-table">
+        <tr><td>Today</td><td id="sToday" class="sales-val">₹0</td></tr>
+        <tr><td>This Month</td><td id="sMonth" class="sales-val">₹0</td></tr>
+        <tr><td>Jan - Jun (H1)</td><td id="sH1" class="sales-val">₹0</td></tr>
+        <tr><td>Jul - Dec (H2)</td><td id="sH2" class="sales-val">₹0</td></tr>
+    </table>
+    <br>
+    <button onclick="backFromSales()">Back</button>
+</div>
+
+<!-- PRINT -->
+<div id="printArea" class="print-only">
+    <div class="print-title">Prabu Gandhi Snacks & Sweets</div>
+    <div class="print-address">
+        2/253 Palladam Road, Puliampatti,<br>
+        Pollachi, Coimbatore - 642002 | Ph: 8870567426
+    </div>
+    <div style="text-align:center; font-weight:bold; margin-top:5px; font-size:11px;">Estimate Quotation</div>
+    <hr>
+    <div class="row"><span>Bill No: <span id="pBill"></span></span><span id="pDate"></span></div>
+    <div class="row"><span>Name: <span id="pCustomer"></span></span><span id="pTime"></span></div>
+    <hr>
+    <div class="head-row">
+        <span class="c-sn">#</span>
+        <span class="c-item">Item</span>
+        <span class="c-qty">Qty</span>
+        <span class="c-rate">Rate</span>
+        <span class="c-amt">Amt</span>
+    </div>
+    <hr>
+    <div id="printItems"></div>
+    <hr>
+    <div class="total-line">
+        <span id="pItems"></span> | ₹ <span id="pTotal"></span>
+    </div>
+    <hr>
+    <div style="text-align:center; font-size:10px; margin-top:5px;">Thank You! Visit Again</div>
+</div>
+
+<script>
+/* TOGGLE AUTH */
+function toggleAuth() {
+    loginBox.classList.toggle('hidden');
+    signupBox.classList.toggle('hidden');
+}
+
+/* SIGNUP LOGIC */
+async function signup() {
+    const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            action: "signup",
+            email: regEmail.value,
+            password: regPassword.value
+        })
+    });
+
+    const d = await res.json();
+    alert(d.msg);
+    if (res.ok) toggleAuth();
+}
+/* LOGIN LOGIC */
+async function login(){
+    const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            action: "login",
+            email: email.value,
+            password: password.value
+        })
+    });
+
+    const d = await res.json();
+    if (!res.ok) return alert(d.msg);
+
+    user = email.value;
+    bills = [];
+    authContainer.classList.add("hidden");
+    billBox.classList.remove("hidden");
+    billNo.innerText = getNextBillNo();
+}
+
+
+/* LANGUAGE */
+const t={
+    en:{login:"Login",add:"Add Item",save:"Save",new:"New Bill",saved:"Saved Bills",sales:"Sales",items:"Items",total:"TOTAL",bill:"Bill No:"},
+    ta:{login:"உள்நுழை",add:"பொருள் சேர்",save:"சேமி",new:"புதிய பில்",saved:"சேமித்த பில்கள்",sales:"விற்பனை",items:"பொருட்கள்",total:"மொத்தம்",bill:"பில் எண்:"}
+};
+
+let editingIndex = null;
+let bills=[],sum=0,user=null;
+
+function setLang(l){
+    localStorage.lang=l;
+    const x=t[l];
+    loginTitle.innerText=x.login;
+    addBtn.innerText=x.add;
+    saveBtn.innerText=x.save;
+    newBtn.innerText=x.new;
+    savedBtn.innerText=x.saved;
+    salesBtn.innerText=x.sales;
+    itemLabel.innerText=x.items;
+    totalLabel.innerText=x.total;
+    billTxt.innerText=x.bill;
+}
+setLang(localStorage.lang||(navigator.language.startsWith("ta")?"ta":"en"));
+
+function getNextBillNo(){
+    let n=Number(localStorage.getItem("PG_BILL_COUNTER"))||1;
+    localStorage.setItem("PG_BILL_COUNTER",n+1);
+    return String(n).padStart(3,"0");
+}
+
+function logout(){location.reload();}
+
+function renumber(){
+    [...list.rows].forEach((r,i)=>r.cells[0].innerText=i+1);
+    itemCount.innerText=list.rows.length;
+}
+
+function addItem(){
+    let r=+price.value;
+    if(!item.value||!r)return;
+    let q=1,a=r*q;sum+=a;
+    list.innerHTML+=`
+    <tr>
+    <td></td><td>${item.value}</td>
+    <td>
+    <button onclick="chgQty(this,-1)" style="width:30px; padding:2px; display:inline;">➖</button>
+    <span>${q}</span>
+    <button onclick="chgQty(this,1)" style="width:30px; padding:2px; display:inline;">➕</button>
+    </td>
+    <td>₹${r}</td><td>₹${a}</td>
+    <td class="remove" onclick="del(this)">❌</td>
+    </tr>`;
+    renumber();total.innerText=sum;
+    item.value="";price.value="";
+}
+
+function chgQty(btn,delta){
+    let row = btn.closest("tr");
+    let span = row.querySelector("span");
+    let qty = Number(span.innerText) + delta;
+    if(qty < 1) return;
+    let rate = Number(row.cells[3].innerText.replace("₹",""));
+    let oldAmt = Number(row.cells[4].innerText.replace("₹",""));
+    let newAmt = qty * rate;
+    span.innerText = qty;
+    row.cells[4].innerText = "₹" + newAmt;
+    sum = sum - oldAmt + newAmt;
+    total.innerText = sum;
+}
+
+function del(e){
+    let r=e.closest("tr");
+    sum-=+r.cells[4].innerText.replace("₹","");
+    r.remove();renumber();total.innerText=sum;
+}
+
+function newBill(){
+    editingIndex = null;
+    list.innerHTML="";sum=0;total.innerText=0;
+    itemCount.innerText=0;customer.value="";
+    billNo.innerText=getNextBillNo();
+}
+
+async function saveBill(){
+    if(sum === 0) return alert("Add items first");
+    if(editingIndex !== null){
+        bills[editingIndex] = { no: billNo.innerText, cust: customer.value||"Customer", items: list.innerHTML, total: sum, date: bills[editingIndex].date };
+        editingIndex = null;
+    } else {
+        bills.push({ no:billNo.innerText, cust:customer.value||"Customer", items:list.innerHTML, total:sum, date:new Date().toISOString() });
+    }
+    await fetch("/api/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_email: user,
+            bill_no: billNo.innerText,
+            customer: customer.value || "Customer",
+            items: list.innerHTML,
+            total: sum
+        })
+    });
+
+    alert("Saved to database");
+    newBill();
+}
+
+async function openSaved(){
+    billBox.classList.add("hidden");
+    savedBox.classList.remove("hidden");
+
+    const res = await fetch(`/api/bills?email=${user}`);
+    bills = await res.json();
+    renderSaved(bills);
+}
+
+
+function renderSaved(arr){
+    savedList.innerHTML="";
+    arr.forEach((b,i)=>{
+        savedList.innerHTML+=`
+        <div class="bill-card">
+        <span onclick="loadBill(${i})">${b.no} | ${b.cust} | ₹${b.total}</span>
+        <span class="remove" onclick="deleteBill(${i})">❌</span>
+        </div>`;
+    });
+}
+
+function deleteBill(i){
+    if(!confirm("Delete this bill?"))return;
+    bills.splice(i,1);
+    renderSaved(bills);
+}
+
+function toggleFilter(){filterPanel.classList.toggle("hidden");}
+
+function applyFilter(){
+    let d=filterDate.value.trim();
+    let m=filterMonth.value.trim();
+    let f=bills.filter(b=>{
+        let bd=b.date.slice(0,10);
+        let bm=b.date.slice(0,7);
+        if(d&&bd!==d)return false;
+        if(m&&bm!==m)return false;
+        return true;
+    });
+    renderSaved(f);
+}
+
+function clearFilter(){
+    filterDate.value="";filterMonth.value="";
+    renderSaved(bills);
+}
+
+function loadBill(i){
+    editingIndex = i;
+    let b=bills[i];
+    billNo.innerText=b.no;
+    customer.value=b.cust;
+    list.innerHTML=b.items;
+    sum=b.total;
+    renumber();total.innerText=sum;
+    back();
+}
+
+function back(){
+    savedBox.classList.add("hidden");
+    billBox.classList.remove("hidden");
+}
+
+function showSales(){
+    billBox.classList.add("hidden");
+    salesBox.classList.remove("hidden");
+    let today = new Date().toISOString().slice(0, 10);
+    let month = today.slice(0, 7);
+    let t1=0, t2=0, f6=0, n6=0;
+    bills.forEach(b => {
+        let d = b.date.slice(0, 10);
+        let m = b.date.slice(0, 7);
+        let mo = new Date(b.date).getMonth();
+        if (d === today) t1 += b.total;
+        if (m === month) t2 += b.total;
+        mo < 6 ? f6 += b.total : n6 += b.total;
+    });
+    document.getElementById('sToday').innerText = "₹" + t1;
+    document.getElementById('sMonth').innerText = "₹" + t2;
+    document.getElementById('sH1').innerText = "₹" + f6;
+    document.getElementById('sH2').innerText = "₹" + n6;
+}
+
+function backFromSales(){
+    salesBox.classList.add("hidden");
+    billBox.classList.remove("hidden");
+}
+
+function preparePrint(){
+    pBill.innerText=billNo.innerText;
+    pDate.innerText=new Date().toLocaleDateString();
+    pTime.innerText=new Date().toLocaleTimeString();
+    pCustomer.innerText = (customer.value || "Customer");
+    pTotal.innerText=sum;
+    pItems.innerText="Items : "+list.rows.length;
+    let h="";
+    [...list.rows].forEach(r=>{
+        h+=`<div class="item-row">
+        <span class="c-sn">${r.cells[0].innerText}</span>
+        <span class="c-item">${r.cells[1].innerText}</span>
+        <span class="c-qty">${r.cells[2].querySelector("span").innerText}</span>
+        <span class="c-rate">${r.cells[3].innerText}</span>
+        <span class="c-amt">${r.cells[4].innerText}</span>
+        </div>`;
+    });
+    printItems.innerHTML=h;
+}
+</script>
+
+</body>
+</html>
