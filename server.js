@@ -7,14 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Auth routes
+// Auth
 app.post("/api/auth", authHandler);
 
-// Bills routes
+// Bills
 app.get("/api/bills", billsHandler);
 app.post("/api/bills", billsHandler);
 
-// Health check
 app.get("/", (req, res) => {
   res.send("Billing backend running ✅");
 });
